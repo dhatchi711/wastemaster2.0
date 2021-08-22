@@ -21,9 +21,9 @@ const AuthForm = () => {
     setIsLoading(true);
     let url;
     if (isLogin) {
-      url =
+      url = 
       'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='
-      + process.env.REACT_APP_FIREBASE_API_KEY;;
+      + process.env.REACT_APP_FIREBASE_API_KEY;
     } else {
       url =
       'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='
@@ -40,15 +40,14 @@ const AuthForm = () => {
         'Content-Type': 'application/json',
       },
     })
-      .then((res) => {
+      .then(async (res) => {
         setIsLoading(false);
         if (res.ok) {
           return res.json();
         } else {
-          return res.json().then((data) => {
-            let errorMessage = 'Authentication failed!';
-            throw new Error(errorMessage);
-          });
+          const data = await res.json();
+          let errorMessage = 'Authentication failed!';
+          throw new Error(errorMessage);
         }
       })
       .then((data) => {
