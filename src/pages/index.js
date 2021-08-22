@@ -1,10 +1,12 @@
 import React from 'react';
 import Card from '../Components/Card/Card.js';
 import '../index.css';
+import Upload from '../Components/UploadImg/Upload.js'
 
 const Home = () => {
   return (
     <div className = 'App'>
+    <Upload></Upload>
     <div class='flexbox-container'>
     <div class='test'>
     <Card

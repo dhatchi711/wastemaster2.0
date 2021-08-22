@@ -24,13 +24,10 @@ const Navbar = () => {
                     <NavLink to="/map" activeStyle>
                         Map
                     </NavLink>
-                    <NavLink to="/signup" activeStyle>
-                        Sign Up
+                    <NavLink to="/login" activeStyle>
+                        Log In
                     </NavLink>
                 </NavMenu>
-                <NavBtnLink to='/signin'>
-                    Sign In
-                </NavBtnLink>
             </Nav>
         </>
     );
