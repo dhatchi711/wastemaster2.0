@@ -8,10 +8,14 @@ import About from './pages/about';
 import AuthPage from './pages/AuthPage';
 import Recyclers from './Components/Recyclers/Recyclers';
 import RecyclingNearMe from './Components/RecyclingNearMe';
+import MainNavigation from './Components/Navigation/MainNavigation';
+
 
 function App() {
   return (
     <Router>
+      <MainNavigation/>
+      </main>
       <Switch>
           <Route path='/' exact component={Home} />
           <Route path='/about' component={About}/>
@@ -23,6 +27,7 @@ function App() {
           </Route>
           <Redirect to='/'/>
       </Switch>
+      </main>
     </Router>
   );
 }
