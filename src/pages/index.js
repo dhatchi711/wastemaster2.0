@@ -5,7 +5,7 @@ import Upload from '../Components/UploadImg/Upload.js'
 
 const Home = () => {
   return (
-    <div className = 'App'>
+    <div>
     <Upload></Upload>
     <div class='flexbox-container'>
     <div class='test'>
