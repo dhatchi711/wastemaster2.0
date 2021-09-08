@@ -1,6 +1,6 @@
 const express = require('express');
 const itemControllers = require('../controllers/places-controller');
-
+const {check} = require('express-validator');
 const router = express.Router();
 
 const DUMMY_ITEMS = [
@@ -14,8 +14,16 @@ const DUMMY_ITEMS = [
 
 router.get('/:pid', itemControllers.getItemById);
 
-router.get('/user/:uid', itemControllers.getItemByUserId);
+router.get('/user/:uid', itemControllers.getItemsByUserId);
 
-router.post('/', itemControllers.createItem);
+router.post('/', [check('title').not().isEmpty(), check('description').isLength({min:5})],itemControllers.createItem);
+
+
+
+router.patch("/:pid", [check('title').not().isEmpty(), check('description').isLength({min:5})], itemControllers.updateItem);
+router.delete("/:pid", itemControllers.deleteItem);
+
+
+
 
 module.exports = router;
