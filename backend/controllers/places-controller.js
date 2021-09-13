@@ -1,6 +1,7 @@
 const HttpError = require('../models/http-error');
 const { v4: uuid } = require('uuid');
 const {validationResult} = require('express-validator');
+const Item = require('../models/item');
 
 let DUMMY_ITEMS = [
     {
@@ -11,17 +12,26 @@ let DUMMY_ITEMS = [
     }
 ]
 
-const getItemById = (req, res, next) => {
+const getItemById = async (req, res, next) => {
     const itemId = req.params.pid;
-    const item = DUMMY_ITEMS.find(p => {
-        return p.id === itemId;
-    });
+    let item;
+    try {
+        item = await Item.findById(itemId);
+    } catch (error) {
+        const err = new HttpError(
+            'Something went wrong, could not find item.',
+            500
+        );
+        return next(err);
+    }
+
 
     if(!item){
         return next(new HttpError('Couldnt find an item for the provided itemID', 404));
     }
 
-    res.json({item});
+    res.json({item: item.toObject( {getters: true})});
+
 };
 
 const getItemsByUserId = (req, res, next) => {
@@ -37,20 +47,29 @@ const getItemsByUserId = (req, res, next) => {
     res.json({items});
 };
 
-const createItem = (req, res, next) =>{
+const createItem = async (req, res, next) =>{
     const errors = validationResult(req);
     if (!errors.isEmpty()){
         console.log(errors);
         throw new HttpError('Invalid inputs passed, please check your inputs', 422);
     }
     const { title, description, creator } = req.body;
-    const createdItem = {
-        id: uuid(),
-        title: title,
-        description: description,
-        creator: creator
-    };
-    DUMMY_ITEMS.push(createdItem);
+    const createdItem = new Item({
+        title,
+        description,
+        image: 'https://www.gardeningknowhow.com/wp-content/uploads/2014/05/compost-pile.jpg',
+        creator
+    });
+    try {
+        await createdItem.save();
+
+    } catch (error) {
+        const err = new HttpError(
+            'Creating Item failed, please try again',
+            500
+        );
+        return next(err);
+    }
     res.status(201).json({item: createdItem});
 };
 
