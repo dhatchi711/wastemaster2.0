@@ -1,4 +1,6 @@
 const express = require('express');
+const mongoose = require('mongoose');
+
 const HttpError = require('./models/http-error');
 
 const placesRoutes = require('./routes/places-route');
@@ -28,4 +30,11 @@ app.use((error, req,res, next) => {
     res.json({message: error.message || "An unknown error occurred."});
 });
 
-app.listen(5000);
+mongoose
+    .connect('mongodb+srv://deepakWasteMaster:SuDar123@cluster0.ozp0r.mongodb.net/items?retryWrites=true&w=majority')
+    .then(() => {
+        app.listen(5000);
+    })
+    .catch(err => {
+        console.log(err);
+    });
