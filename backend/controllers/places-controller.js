@@ -124,7 +124,7 @@ const deleteItem = async (req, res, next) => {
         return next(err);
     }
     try {
-        await item.remove();
+        await Item.deleteOne(item);
     } catch (error) {
         const err = new HttpError(
             'Something went wrong, could not delete item.',
