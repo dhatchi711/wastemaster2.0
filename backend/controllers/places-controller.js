@@ -3,15 +3,6 @@ const { v4: uuid } = require('uuid');
 const {validationResult} = require('express-validator');
 const Item = require('../models/item');
 
-let DUMMY_ITEMS = [
-    {
-        id: 'p1',
-        title: 'Compost Waste from Yesterday',
-        description: 'Most amt of compost collected from yesterday',
-        creator: 'u1'
-    }
-]
-
 const getItemById = async (req, res, next) => {
     const itemId = req.params.pid;
     let item;
@@ -81,8 +72,9 @@ const updateItem = async (req, res, next) => {
     const { title, description } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()){
-        console.log(errors);
-        throw new HttpError('Invalid inputs passed, please check your inputs', 422);
+        return next(
+            new HttpError('Invalid inputs passed, please check your inputs', 422)        
+        );
     }
     const itemId = req.params.pid;
     let item;
