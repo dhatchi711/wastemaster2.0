@@ -24,27 +24,31 @@ const getItemById = async (req, res, next) => {
         );
         return next(err);
     }
-
-
     if(!item){
         return next(new HttpError('Couldnt find an item for the provided itemID', 404));
     }
 
     res.json({item: item.toObject( {getters: true})});
-
 };
 
-const getItemsByUserId = (req, res, next) => {
+const getItemsByUserId = async (req, res, next) => {
     const userId = req.params.uid;
-    const items = DUMMY_ITEMS.filter(p => {
-        return p.creator === userId;
-    });
+    let items;
+    try {
+        items = await Item.find({creator: userId});
+    } catch (error) {
+        const err = new HttpError(
+            'Something went wrong, could not fetch item.',
+            500
+        );
+        return next(err);
+    }
 
     if(!items || items.length === 0){
         return next(new HttpError('Couldnt find items for the provided userID', 404));
     }
 
-    res.json({items});
+    res.json({items: items.map(item => item.toObject({getters: true}) )});
 };
 
 const createItem = async (req, res, next) =>{
@@ -73,7 +77,7 @@ const createItem = async (req, res, next) =>{
     res.status(201).json({item: createdItem});
 };
 
-const updateItem = (req, res, next) => {
+const updateItem = async (req, res, next) => {
     const { title, description } = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()){
@@ -81,25 +85,54 @@ const updateItem = (req, res, next) => {
         throw new HttpError('Invalid inputs passed, please check your inputs', 422);
     }
     const itemId = req.params.pid;
+    let item;
+    try{
+        item = await Item.findById(itemId);
+    }
+    catch(error){
+        const err = new HttpError(
+            'Something went wrong, could not update item', 500
+        );
+        return next(err);
+    }
 
-    const updatedItem ={...DUMMY_ITEMS.find(p => p.id === itemId)};
-    const itemIndex = DUMMY_ITEMS.findIndex(p => p.id === itemId);
-    updatedItem.title = title;
-    updatedItem.description = description;
+    item.title = title;
+    item.description = description;
 
-    DUMMY_ITEMS[itemIndex] = updatedItem;
-    res.status(200).json({item:updatedItem});
-    
+    try{
+        await item.save();
+    }
+    catch (error){
+        const err = new HttpError(
+            'Something went wrong, could not update item', 500
+        );
+        return next(err);
+    }
+    res.status(200).json({item:item.toObject({getters:true})});
 };
 
-const deleteItem = (req, res, next) => {
+const deleteItem = async (req, res, next) => {
     const itemId = req.param.pid;
-    if(!DUMMY_ITEMS.find(p=> p.id === itemId)){
-        throw new HttpError('Could not find that item.', 404);
+    let item;
+    try {
+        item = await Item.findById(itemId);
+    } catch (error) {
+        const err = new HttpError(
+            'Something went wrong, could not find item.',
+            500
+        );
+        return next(err);
     }
-    DUMMY_ITEMS = DUMMY_ITEMS.filter(p=> p.id !== itemId);
+    try {
+        await item.remove();
+    } catch (error) {
+        const err = new HttpError(
+            'Something went wrong, could not delete item.',
+            500
+        );
+        return next(err);
+    }
     res.status(200).json({message: "Deleted Item"});
-
 };
 
 exports.getItemById = getItemById;
