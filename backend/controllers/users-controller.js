@@ -14,7 +14,7 @@ const getUsers = async (req, res, next) => {
     res.json({users: users.map(user => user.toObject({getters:true}))});
 };
 const signUp = async (req, res, next) => {
-    const {name, email, password, items} = req.body;
+    const {name, email, password} = req.body;
     const errors = validationResult(req);
     if (!errors.isEmpty()){
         return next(
@@ -46,7 +46,7 @@ const signUp = async (req, res, next) => {
         email,
         image: 'https://www.gtlaw.com/-/media/images/team/p/person-philip-i/34485largepng.png',
         password,
-        items
+        items: []
     });
     try {
         await createdUser.save();

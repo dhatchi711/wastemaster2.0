@@ -1,7 +1,9 @@
 const HttpError = require('../models/http-error');
-const { v4: uuid } = require('uuid');
+const mongoose = require('mongoose');
 const {validationResult} = require('express-validator');
 const Item = require('../models/item');
+const User = require('../models/user');
+
 
 const getItemById = async (req, res, next) => {
     const itemId = req.params.pid;
@@ -55,9 +57,29 @@ const createItem = async (req, res, next) =>{
         image: 'https://www.gardeningknowhow.com/wp-content/uploads/2014/05/compost-pile.jpg',
         creator
     });
-    try {
-        await createdItem.save();
 
+    let user;
+    try {
+        user = await User.findById(creator);
+    } catch (error) {
+        const err = new HttpError(
+            'Creating Item failed, please try again',
+            500
+        );
+        return next(err);
+    }
+    if(!user){
+        const err = new HttpError('Could not find user for id.', 404);
+        return next(err);
+    }
+
+    try {
+        const sess = await mongoose.startSession();
+        sess.startTransaction();
+        await createdItem.save({session: sess});
+        user.items.push(createdItem);
+        await user.save({session: sess});
+        await sess.commitTransaction();
     } catch (error) {
         const err = new HttpError(
             'Creating Item failed, please try again',
@@ -104,19 +126,30 @@ const updateItem = async (req, res, next) => {
 };
 
 const deleteItem = async (req, res, next) => {
-    const itemId = req.param.pid;
+    const itemId = req.params.pid;
     let item;
     try {
-        item = await Item.findById(itemId);
-    } catch (error) {
-        const err = new HttpError(
-            'Something went wrong, could not find item.',
-            500
-        );
-        return next(err);
+        item = await Item.findById(itemId).populate('creator');
+    } catch (err) {
+      const error = new HttpError(
+        'Something went wrong, could not delete test.',
+        500
+      );
+      return next(error);
     }
+
+    if (!item) {
+      const error = new HttpError('Could not find item for this id.', 404);
+      return next(error);
+    }
+  
     try {
-        await Item.deleteOne(item);
+        const sess = await mongoose.startSession();
+        sess.startTransaction();
+        await item.remove({session: sess});
+        item.creator.items.pull(item);
+        await item.creator.save({session:sess});
+        await sess.commitTransaction();
     } catch (error) {
         const err = new HttpError(
             'Something went wrong, could not delete item.',
