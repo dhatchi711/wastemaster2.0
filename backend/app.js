@@ -31,7 +31,7 @@ app.use((error, req,res, next) => {
 });
 
 mongoose
-    .connect('mongodb+srv://deepakWasteMaster:SuDar123@cluster0.ozp0r.mongodb.net/items?retryWrites=true&w=majority')
+    .connect('mongodb+srv://deepakWasteMaster:SuDar123@cluster0.ozp0r.mongodb.net/wastemaster?retryWrites=true&w=majority')
     .then(() => {
         app.listen(5000);
     })
