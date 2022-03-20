@@ -2,8 +2,9 @@
 
 ## Available Scripts
 
-From the "frontend" directory, you can run:
+The frontend directory contains all the web-applications scripts and the backend directory contains all the ML, API and DB scripts.
 
+To start the web applications, go to frontend directory and execute the following command
 ### `npm start`
 
 Runs the app in the development mode.\
