@@ -2,7 +2,7 @@
 
 ## Available Scripts
 
-In the frontend directory, you can run:
+From the "frontend" directory, you can run:
 
 ### `npm start`
 
