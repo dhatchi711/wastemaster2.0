@@ -10,13 +10,13 @@ To start the web applications, go to frontend directory and execute the followin
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
+The page will reload if you make any edits.
 
 In the backend directory you can run:
 
 ### `npm start`
 
-Runs the backend in the development mode.\
+Runs the backend in the development mode.
 Open [http://localhost:5000](http://localhost:5000) to view it in the browser.
 
 
